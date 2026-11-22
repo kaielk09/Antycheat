@@ -1,10 +1,10 @@
 name: PurpleAnticheat
-version: 1.2.1
+version: 1.3.0
 main: pl.purple.anticheat.PurpleAnticheat
 api-version: '1.21'
 author: Purple
 website: https://github.com/kaielk09/Antycheat
-description: PurpleAnticheat admin GUI, moderation, review pipeline and conservative rate guards
+description: PurpleAnticheat detection, moderation and admin tools
 commands:
   purpleanticheat:
     description: PurpleAnticheat admin commands
