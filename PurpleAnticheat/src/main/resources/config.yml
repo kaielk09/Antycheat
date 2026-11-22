@@ -20,12 +20,12 @@ checks:
       enabled: true
       max-distance: 4.15
 autopunish:
-  enabled: true
+  enabled: false
   checks:
     movement: {enabled: false, duration: '20d', confirm-seconds: 3}
-    combat: {enabled: false, duration: '6h', confirm-seconds: 3}
+    combat: {enabled: true, duration: '6h', confirm-seconds: 3}
     flight: {enabled: false, duration: '3d', confirm-seconds: 3}
-    speed: {enabled: false, duration: '1d', confirm-seconds: 3}
+    speed: {enabled: true, duration: '1d', confirm-seconds: 3}
     interaction: {enabled: false, duration: '12h', confirm-seconds: 3}
     packet: {enabled: false, duration: '6h', confirm-seconds: 3}
     inventory: {enabled: false, duration: '1d', confirm-seconds: 3}
