@@ -1,0 +1,16 @@
+name: PurpleAnticheat
+version: 1.2.1
+main: pl.purple.anticheat.PurpleAnticheat
+api-version: '1.21'
+author: Purple
+website: https://github.com/kaielk09/Antycheat
+description: PurpleAnticheat admin GUI, moderation, review pipeline and conservative rate guards
+commands:
+  purpleanticheat:
+    description: PurpleAnticheat admin commands
+    usage: /purpleanticheat banedit | /purpleanticheat console edit
+    aliases: [purpleac, pac]
+permissions:
+  purpleanticheat.admin:
+    description: Admin access (OP required too)
+    default: op
