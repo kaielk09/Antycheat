@@ -1,25 +1,25 @@
-# PurpleAnticheat 1.3.2
+# PurpleAnticheat 1.3.3
 
 Purple/black Bukkit-family server plugin source. The repository is the working source project; no JAR is committed or generated yet.
 
-## Current modules
-- `PurpleAnticheat.java` — plugin entry point and commands
-- `AdminGUI.java` — OP-only purple admin menus, manual ban editor, history and response-profile editor
-- `BanManager.java` — duration parsing, Bukkit name bans and YAML punishment history
-- `DetectionManager.java` — immediate automatic punishment after a check reports a validated detection, plus OP-only alerts
-- `DetectionChecks.java` — server-side speed and attack-reach heuristics
-- `RateLimitGuard.java` — command/chat/interaction spam protection
-- `config.yml` — check thresholds and punishment profiles
+## Detection engines
 
-## Automatic punishment
-Auto-punish is enabled for the implemented speed and combat-reach checks. One **validated detection report** immediately triggers the configured punishment; there is no six-signal counter. The duration comes from the selected check's `duration` setting in the response-profile GUI (`/purpleanticheat console edit`) or the matching `autopunish.checks.<check>.duration` config value. Supported formats include `30m`, `2h`, `3d`, `1w`, and `perm`.
+### Built-in Purple checks
+- Speed: movement sampling with exemptions for common legitimate movement states.
+- Reach: server-side distance-to-hitbox check on uncancelled player attacks.
 
-Detection announcements are sent only to online OP players. The message includes the player, check, and configured ban duration. The default duration for speed and combat is `1h`; change it in the response-profile editor to use the value you selected.
+### Optional GrimAC integration
+PurpleAnticheat can connect to the official GrimAC public API when GrimAC is installed beside it. Grim's `FlagEvent` notifications are forwarded to PurpleAnticheat's punishment and OP-alert pipeline. This lets Grim perform its own supported checks while PurpleAnticheat controls the server's ban duration, punishment history, and staff messages.
 
-A speed report is produced only after the movement sampler observes the configured number of consecutive high-speed samples. Reach reports are produced from an uncancelled player attack beyond the configured distance. These are still heuristics, not proof: latency, knockback, server lag, custom movement mechanics, and other plugins can cause false positives. Immediate auto-bans make careful threshold testing especially important. Test on a private server first and keep a way to disable `autopunish.enabled`.
+Install GrimAC separately in the server's `plugins` folder. PurpleAnticheat does not bundle GrimAC or its implementation. The integration uses GrimAPI as a provided/compile-only dependency and is optional at runtime. If GrimAC is absent, Purple's built-in Speed and Reach checks still load.
 
-## Detection coverage
-This version implements basic speed and reach checks only. Aim assistance, autoclickers, packet manipulation, inventory automation, flight variants and other cheat categories do not have complete detection modules yet. Their profiles remain disabled and do not automatically ban.
+The Grim integration currently forwards any non-cancelled Grim flag to the `grim` punishment profile. With the default configuration, one Grim flag causes an immediate ban for `1h`. This is intentionally configurable under `autopunish.checks.grim.duration` and `autopunish.checks.grim.enabled`. Because automatic punishment is immediate, test on a private server first and review Grim's own check configuration and alerts before enabling it on a public server. A check flag is a detector signal, not an infallible proof.
+
+## Automatic punishment and staff alerts
+- Auto-punish is enabled for built-in Speed, Reach, and forwarded Grim flags.
+- The duration is read from the relevant profile in `/purpleanticheat console edit` or `config.yml`.
+- Detection alerts are sent only to online OP players.
+- Punishment history is saved in `plugins/PurpleAnticheat/punishments.yml`.
 
 ## Commands
 - `/purpleanticheat banedit` (aliases: `/purpleac banedit`, `/pac banedit`)
@@ -34,7 +34,7 @@ Requires JDK 21 and Maven. From this directory run:
 mvn package
 ```
 
-Expected output: `target/PurpleAnticheat-1.3.2.jar`.
+Expected output: `target/PurpleAnticheat-1.3.3.jar`.
 
 ## Compatibility
-Compiled against Spigot API 1.21.4. Paper, Purpur and Spigot 1.21.x runtime compatibility still needs testing on each target server.
+Compiled against Spigot API 1.21.4 and GrimAPI 1.3.2.1. GrimAC is an optional runtime dependency. Paper, Purpur and Spigot versions should be tested on the exact server version before deployment.
