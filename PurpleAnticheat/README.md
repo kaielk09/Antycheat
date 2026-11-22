@@ -1,40 +1,46 @@
-# PurpleAnticheat 1.3.3
+# PurpleAnticheat 1.3.4
 
-Purple/black Bukkit-family server plugin source. The repository is the working source project; no JAR is committed or generated yet.
+PurpleAnticheat is an independent Minecraft server anti-cheat plugin. It does not require GrimAC or any other anti-cheat plugin, and it does not embed or copy another project's implementation.
 
-## Detection engines
+## Design direction
 
-### Built-in Purple checks
-- Speed: movement sampling with exemptions for common legitimate movement states.
-- Reach: server-side distance-to-hitbox check on uncancelled player attacks.
+The project takes general engineering inspiration from modern server-side anti-cheats: movement simulation, state-aware checks, latency-aware combat analysis, independent check modules, evidence tracking, and configurable staff responses. All PurpleAnticheat checks and code are implemented independently.
 
-### Optional GrimAC integration
-PurpleAnticheat can connect to the official GrimAC public API when GrimAC is installed beside it. Grim's `FlagEvent` notifications are forwarded to PurpleAnticheat's punishment and OP-alert pipeline. This lets Grim perform its own supported checks while PurpleAnticheat controls the server's ban duration, punishment history, and staff messages.
+## Current implemented checks
 
-Install GrimAC separately in the server's `plugins` folder. PurpleAnticheat does not bundle GrimAC or its implementation. The integration uses GrimAPI as a provided/compile-only dependency and is optional at runtime. If GrimAC is absent, Purple's built-in Speed and Reach checks still load.
+- **Speed:** movement sampling with exemptions for common legitimate movement states.
+- **Reach:** server-side distance-to-hitbox check on uncancelled player attacks.
 
-The Grim integration currently forwards any non-cancelled Grim flag to the `grim` punishment profile. With the default configuration, one Grim flag causes an immediate ban for `1h`. This is intentionally configurable under `autopunish.checks.grim.duration` and `autopunish.checks.grim.enabled`. Because automatic punishment is immediate, test on a private server first and review Grim's own check configuration and alerts before enabling it on a public server. A check flag is a detector signal, not an infallible proof.
+These are heuristics, not proof. In particular, the current Reach check is a basic first version and can be affected by server latency, custom hitboxes, and server mechanics. Automatic punishment should be tested on a private server before public use.
 
-## Automatic punishment and staff alerts
-- Auto-punish is enabled for built-in Speed, Reach, and forwarded Grim flags.
-- The duration is read from the relevant profile in `/purpleanticheat console edit` or `config.yml`.
-- Detection alerts are sent only to online OP players.
-- Punishment history is saved in `plugins/PurpleAnticheat/punishments.yml`.
+## Planned independent check families
+
+The following are development targets, not currently implemented detections:
+- Movement: fly, timer, air movement, ground spoof, step and unusual acceleration.
+- Combat: reach improvements, attack cadence, aim consistency, target switching and critical-hit anomalies.
+- Player actions: scaffold-like placement patterns, fast-place anomalies, inventory action patterns.
+- Network/protocol: malformed or impossible action sequences and packet-rate anomalies.
+- Defensive analysis: per-player evidence history, latency and world-state compensation, false-positive suppression.
+
+A client brand/name such as Ventura is not reliable proof of cheating. The plugin focuses on observable server-side behavior rather than trying to identify a client's name.
 
 ## Commands
+
 - `/purpleanticheat banedit` (aliases: `/purpleac banedit`, `/pac banedit`)
 - `/purpleanticheat console edit`
 
 Both require OP and `purpleanticheat.admin`.
 
 ## Build
+
 Requires JDK 21 and Maven. From this directory run:
 
 ```bash
 mvn package
 ```
 
-Expected output: `target/PurpleAnticheat-1.3.3.jar`.
+Expected output: `target/PurpleAnticheat-1.3.4.jar`.
 
 ## Compatibility
-Compiled against Spigot API 1.21.4 and GrimAPI 1.3.2.1. GrimAC is an optional runtime dependency. Paper, Purpur and Spigot versions should be tested on the exact server version before deployment.
+
+Compiled against Spigot API 1.21.4. Paper and Purpur should be tested on the exact server version before deployment.
