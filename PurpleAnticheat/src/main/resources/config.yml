@@ -12,38 +12,54 @@ messages:
   ban-format: '&8&lPunishment details\\n&7Reason: &f{reason}\\n&7Duration: &f{duration}\\n&7Banned by: &f{staff}\\n\\n&dYou may appeal through the server staff.'
   ban-unknown-duration: '&cInvalid duration. Use 30m, 2h, 3d, 1w or perm.'
 
+# Evidence points decay over time. A check only alerts staff after reaching its threshold.
+evidence:
+  default-threshold: 5.0
+  thresholds:
+    speed: 4.5
+    flight: 4.5
+    combat: 5.0
+    action: 4.5
+    packet: 5.0
+
 checks:
   movement:
     enabled: true
     horizontal-per-tick: 1.45
-    samples: 8
+    samples: 6
   combat:
     reach:
       enabled: true
-      max-distance: 4.35
+      max-distance: 3.55
+      ping-compensation: 0.002
+    max-successful-hits-per-second: 18
+  actions:
+    enabled: true
+    max-placements-per-second: 14
+  packet:
+    enabled: true
+    max-swings-per-second: 24
+    max-interactions-per-second: 38
+    max-inventory-clicks-per-second: 35
+    max-commands-per-second: 8
 
+# Automatic bans are deliberately OFF by default until the server owner validates
+# thresholds on their own server/version. Staff evidence alerts remain enabled.
 autopunish:
-  enabled: true
-  player-cooldown-seconds: 0
+  enabled: false
+  player-cooldown-seconds: 60
   checks:
-    speed:
-      enabled: true
-      min-violations: 1
-      window-seconds: 30
-      duration: '1h'
-    combat:
-      enabled: true
-      min-violations: 1
-      window-seconds: 30
-      duration: '1h'
-    movement: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
-    flight: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
-    interaction: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
-    packet: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
-    inventory: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
-    knockback: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
-    aim: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
-    other: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    speed: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    flight: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    combat: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    action: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    packet: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    movement: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    interaction: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    inventory: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    knockback: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    aim: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
+    other: {enabled: false, min-violations: 3, window-seconds: 30, duration: '1h'}
 
 guard:
   enabled: true
