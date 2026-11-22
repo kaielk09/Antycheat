@@ -9,18 +9,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
-
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Conservative, server-authoritative checks.
- * These are heuristics, not proof of cheating; automatic punishments stay disabled by default.
- */
+/** Conservative server-side movement and reach signals. These are heuristics, not proof. */
 public final class DetectionChecks implements Listener {
     private final PurpleAnticheat plugin;
     private final Map<UUID, Location> previous = new ConcurrentHashMap<>();
@@ -38,26 +35,22 @@ public final class DetectionChecks implements Listener {
             UUID id = player.getUniqueId();
             Location now = player.getLocation();
             Location before = previous.put(id, now.clone());
-            if (before == null || !before.getWorld().equals(now.getWorld())) continue;
-
+            if (before == null || before.getWorld() == null || !before.getWorld().equals(now.getWorld())) continue;
             if (isExempt(player)) {
                 speedSamples.remove(id);
                 continue;
             }
-
             double dx = now.getX() - before.getX();
             double dz = now.getZ() - before.getZ();
             double horizontal = Math.sqrt(dx * dx + dz * dz);
-
-            // Intentionally high threshold and multiple consecutive samples.
-            double threshold = plugin.getConfig().getDouble("checks.movement.horizontal-per-tick", 1.15);
-            int required = Math.max(2, plugin.getConfig().getInt("checks.movement.samples", 4));
+            double threshold = plugin.getConfig().getDouble("checks.movement.horizontal-per-tick", 1.45);
+            int required = Math.max(4, plugin.getConfig().getInt("checks.movement.samples", 8));
             if (horizontal > threshold) {
                 int count = speedSamples.merge(id, 1, Integer::sum);
                 if (count >= required) {
                     speedSamples.put(id, 0);
                     plugin.reportSignal(player, "speed",
-                            String.format(java.util.Locale.ROOT, "horizontal movement %.2f blocks/tick", horizontal));
+                            String.format(java.util.Locale.ROOT, "repeated high horizontal movement (%.2f blocks/tick)", horizontal));
                 }
             } else {
                 speedSamples.computeIfPresent(id, (key, count) -> Math.max(0, count - 1));
@@ -83,14 +76,13 @@ public final class DetectionChecks implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (!plugin.getConfig().getBoolean("checks.combat.reach.enabled", true)) return;
         if (!(event.getDamager() instanceof Player attacker)) return;
+        if (attacker.getGameMode() != GameMode.SURVIVAL || attacker.isInsideVehicle() || attacker.isGliding()) return;
         Entity target = event.getEntity();
-        if (attacker.getGameMode() == GameMode.CREATIVE || attacker.isInsideVehicle()) return;
-
         double distance = distanceToBox(attacker.getEyeLocation(), target.getBoundingBox());
-        double maxReach = plugin.getConfig().getDouble("checks.combat.reach.max-distance", 4.15);
+        double maxReach = plugin.getConfig().getDouble("checks.combat.reach.max-distance", 4.35);
         if (distance > maxReach) {
             plugin.reportSignal(attacker, "combat",
-                    String.format(java.util.Locale.ROOT, "attack distance %.2f blocks (limit %.2f)", distance, maxReach));
+                    String.format(java.util.Locale.ROOT, "attack outside configured reach (%.2f blocks)", distance));
         }
     }
 
@@ -102,10 +94,15 @@ public final class DetectionChecks implements Listener {
     }
 
     @EventHandler
+    public void onTeleport(PlayerTeleportEvent event) {
+        previous.remove(event.getPlayer().getUniqueId());
+        speedSamples.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        UUID id = event.getPlayer().getUniqueId();
-        previous.remove(id);
-        speedSamples.remove(id);
+        previous.remove(event.getPlayer().getUniqueId());
+        speedSamples.remove(event.getPlayer().getUniqueId());
     }
 
     public void shutdown() {
