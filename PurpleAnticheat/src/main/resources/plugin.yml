@@ -1,11 +1,10 @@
 name: PurpleAnticheat
-version: 1.3.3
+version: 1.3.4
 main: pl.purple.anticheat.PurpleAnticheat
 api-version: '1.21'
 author: Purple
 website: https://github.com/kaielk09/Antycheat
-description: PurpleAnticheat detection, moderation and admin tools with optional GrimAC integration
-softdepend: [GrimAC]
+description: Standalone PurpleAnticheat detection, moderation and admin tools
 commands:
   purpleanticheat:
     description: PurpleAnticheat admin commands
