@@ -31,7 +31,6 @@ checks:
     reach:
       enabled: true
       max-distance: 3.55
-      ping-compensation: 0.002
     max-successful-hits-per-second: 18
   actions:
     enabled: true
