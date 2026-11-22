@@ -29,17 +29,18 @@ public final class GrimIntegration {
         try {
             GrimAbstractAPI api = GrimAPIProvider.get();
             grimPlugin = api.getGrimPlugin(plugin);
-            api.getEventBus().get(FlagEvent.class).onFlag(grimPlugin, (user, check, verbose, cancelled) -> {
+            api.getEventBus().get(FlagEvent.class).onFlagSupplier(grimPlugin, (user, check, verbose, cancelled) -> {
                 if (cancelled) return cancelled;
 
                 String playerName = user.getName();
                 String checkName = check.getCheckName();
-                String evidence = verbose == null ? "" : verbose;
+                String evidence = verbose.get();
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     Player player = Bukkit.getPlayerExact(playerName);
                     if (player != null && player.isOnline()) {
-                        plugin.reportSignal(player, "grim", checkName + (evidence.isBlank() ? "" : ": " + evidence));
+                        plugin.reportSignal(player, "grim",
+                                checkName + (evidence.isBlank() ? "" : ": " + evidence));
                     }
                 });
                 return cancelled;
