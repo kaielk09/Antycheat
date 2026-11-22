@@ -33,9 +33,9 @@ public final class CombatEngine implements Listener {
         Entity target = event.getEntity();
         if (plugin.getConfig().getBoolean("checks.combat.reach.enabled", true)) {
             double distance = distanceToBox(attacker, target.getBoundingBox());
-            int ping = Math.max(0, Math.min(200, attacker.getPing()));
-            double maxReach = plugin.getConfig().getDouble("checks.combat.reach.max-distance", 3.55)
-                    + ping * plugin.getConfig().getDouble("checks.combat.reach.ping-compensation", 0.002);
+            // Bukkit's ping value is only a qualitative connection indicator, not a reliable
+            // anti-cheat compensation source. Keep this threshold explicit and configurable.
+            double maxReach = plugin.getConfig().getDouble("checks.combat.reach.max-distance", 3.55);
             if (distance > maxReach) {
                 long now = System.currentTimeMillis();
                 Long previous = lastReachFlag.put(attacker.getUniqueId(), now);
