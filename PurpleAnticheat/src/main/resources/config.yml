@@ -24,26 +24,26 @@ checks:
 
 autopunish:
   enabled: true
-  player-cooldown-seconds: 3600
+  player-cooldown-seconds: 0
   checks:
     speed:
       enabled: true
-      min-violations: 6
+      min-violations: 1
       window-seconds: 30
       duration: '1h'
     combat:
       enabled: true
-      min-violations: 6
+      min-violations: 1
       window-seconds: 30
       duration: '1h'
-    movement: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
-    flight: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
-    interaction: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
-    packet: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
-    inventory: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
-    knockback: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
-    aim: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
-    other: {enabled: false, min-violations: 6, window-seconds: 30, duration: '1h'}
+    movement: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    flight: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    interaction: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    packet: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    inventory: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    knockback: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    aim: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
+    other: {enabled: false, min-violations: 1, window-seconds: 30, duration: '1h'}
 
 guard:
   enabled: true
