@@ -71,7 +71,7 @@ public final class MovementEngine implements Listener {
                         && Math.abs(player.getVelocity().getY()) < 0.08
                         && player.getFallDistance() > 2.5f) {
                     int hovering = hoverTicks.merge(id, 1, Integer::sum);
-                    if (hovering == 12) {
+                    if (hovering >= 12 && (hovering - 12) % 10 == 0) {
                         plugin.reportEvidence(player, "flight",
                                 "sustained mid-air hovering without a supported movement state", 1.5);
                     }
