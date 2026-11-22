@@ -8,20 +8,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor,TabCompleter {
- private BanManager banManager;private AdminGUI adminGUI;private DetectionManager detectionManager;private RateLimitGuard rateLimitGuard;
+ private BanManager banManager;private AdminGUI adminGUI;private DetectionManager detectionManager;private RateLimitGuard rateLimitGuard;private DetectionChecks detectionChecks;
  @Override public void onEnable(){
-  saveDefaultConfig();banManager=new BanManager(this);adminGUI=new AdminGUI(this,banManager);detectionManager=new DetectionManager(this);rateLimitGuard=new RateLimitGuard(this);
-  getServer().getPluginManager().registerEvents(adminGUI,this);getServer().getPluginManager().registerEvents(detectionManager,this);getServer().getPluginManager().registerEvents(rateLimitGuard,this);
+  saveDefaultConfig();banManager=new BanManager(this);adminGUI=new AdminGUI(this,banManager);detectionManager=new DetectionManager(this);rateLimitGuard=new RateLimitGuard(this);detectionChecks=new DetectionChecks(this);
+  getServer().getPluginManager().registerEvents(adminGUI,this);getServer().getPluginManager().registerEvents(detectionManager,this);getServer().getPluginManager().registerEvents(rateLimitGuard,this);getServer().getPluginManager().registerEvents(detectionChecks,this);
   var cmd=getCommand("purpleanticheat");if(cmd==null){getLogger().severe("Command missing from plugin.yml; disabling.");getServer().getPluginManager().disablePlugin(this);return;}cmd.setExecutor(this);cmd.setTabCompleter(this);
-  getLogger().info("PurpleAnticheat enabled: admin GUI, response pipeline and rate guards loaded.");
+  getLogger().info("PurpleAnticheat enabled: admin GUI, speed/reach heuristics, response pipeline and rate guards loaded.");
  }
- @Override public void onDisable(){if(banManager!=null)banManager.save();}
+ @Override public void onDisable(){if(detectionChecks!=null)detectionChecks.shutdown();if(banManager!=null)banManager.save();}
  @Override public boolean onCommand(CommandSender sender,Command command,String label,String[] args){
   if(!(sender instanceof Player p)){sender.sendMessage("This command is available in-game only.");return true;}
   if(!p.isOp()||!p.hasPermission("purpleanticheat.admin")){p.sendMessage(color("&cYou need OP and purpleanticheat.admin."));return true;}
   if(args.length==1&&args[0].equalsIgnoreCase("banedit")){adminGUI.openMain(p);return true;}
   if(args.length==2&&args[0].equalsIgnoreCase("console")&&args[1].equalsIgnoreCase("edit")){adminGUI.openConsoleEdit(p);return true;}
-  p.sendMessage(color(getConfig().getString("messages.prefix","&5Purple &dAnticheat &8» ")+"&7Usage: &f/"+label+" banedit &7or &f/"+label+" console edit"));return true;
+  p.sendMessage(color(getConfig().getString("messages.prefix","&5Purple &dAnticheat &8» ")+ "&7Usage: &f/"+label+" banedit &7or &f/"+label+" console edit"));return true;
  }
  @Override public List<String> onTabComplete(CommandSender s,Command c,String a,String[] args){
   if(!(s instanceof Player p)||!p.isOp()||!p.hasPermission("purpleanticheat.admin"))return List.of();
