@@ -8,8 +8,17 @@ messages:
   prefix: '&5&lPURPLE &d&lANTICHEAT &8» &r'
   ban-title: '&5&lPURPLE ANTICHEAT'
   ban-subtitle: '&dYou have been banned from this server'
-  ban-format: '&8&lPunishment details\n&7Reason: &f{reason}\n&7Duration: &f{duration}\n&7Banned by: &f{staff}\n\n&dYou may appeal through the server staff.'
+  ban-format: '&8&lPunishment details\\n&7Reason: &f{reason}\\n&7Duration: &f{duration}\\n&7Banned by: &f{staff}\\n\\n&dYou may appeal through the server staff.'
   ban-unknown-duration: '&cInvalid duration. Use 30m, 2h, 3d, 1w or perm.'
+checks:
+  movement:
+    enabled: true
+    horizontal-per-tick: 1.15
+    samples: 4
+  combat:
+    reach:
+      enabled: true
+      max-distance: 4.15
 autopunish:
   enabled: true
   checks:
