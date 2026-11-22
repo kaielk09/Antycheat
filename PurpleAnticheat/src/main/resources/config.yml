@@ -12,6 +12,9 @@ messages:
   ban-format: '&8&lPunishment details\\n&7Reason: &f{reason}\\n&7Duration: &f{duration}\\n&7Banned by: &f{staff}\\n\\n&dYou may appeal through the server staff.'
   ban-unknown-duration: '&cInvalid duration. Use 30m, 2h, 3d, 1w or perm.'
 
+grim:
+  enabled: true
+
 checks:
   movement:
     enabled: true
@@ -32,6 +35,11 @@ autopunish:
       window-seconds: 30
       duration: '1h'
     combat:
+      enabled: true
+      min-violations: 1
+      window-seconds: 30
+      duration: '1h'
+    grim:
       enabled: true
       min-violations: 1
       window-seconds: 30
