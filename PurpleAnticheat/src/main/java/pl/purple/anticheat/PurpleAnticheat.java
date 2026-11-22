@@ -14,8 +14,12 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
     private BanManager banManager;
     private AdminGUI adminGUI;
     private DetectionManager detectionManager;
+    private EvidenceEngine evidenceEngine;
     private RateLimitGuard rateLimitGuard;
-    private DetectionChecks detectionChecks;
+    private MovementEngine movementEngine;
+    private CombatEngine combatEngine;
+    private ActionEngine actionEngine;
+    private PacketBehaviorEngine packetBehaviorEngine;
 
     @Override
     public void onEnable() {
@@ -23,13 +27,20 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
         banManager = new BanManager(this);
         adminGUI = new AdminGUI(this, banManager);
         detectionManager = new DetectionManager(this);
+        evidenceEngine = new EvidenceEngine(this);
         rateLimitGuard = new RateLimitGuard(this);
-        detectionChecks = new DetectionChecks(this);
+        movementEngine = new MovementEngine(this);
+        combatEngine = new CombatEngine(this);
+        actionEngine = new ActionEngine(this);
+        packetBehaviorEngine = new PacketBehaviorEngine(this);
 
         getServer().getPluginManager().registerEvents(adminGUI, this);
         getServer().getPluginManager().registerEvents(detectionManager, this);
         getServer().getPluginManager().registerEvents(rateLimitGuard, this);
-        getServer().getPluginManager().registerEvents(detectionChecks, this);
+        getServer().getPluginManager().registerEvents(movementEngine, this);
+        getServer().getPluginManager().registerEvents(combatEngine, this);
+        getServer().getPluginManager().registerEvents(actionEngine, this);
+        getServer().getPluginManager().registerEvents(packetBehaviorEngine, this);
 
         var cmd = getCommand("purpleanticheat");
         if (cmd == null) {
@@ -39,12 +50,13 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
         }
         cmd.setExecutor(this);
         cmd.setTabCompleter(this);
-        getLogger().info("PurpleAnticheat enabled: standalone detection engine, moderation and admin tools loaded.");
+        getLogger().info("PurpleAnticheat enabled: five independent detection engines are active.");
     }
 
     @Override
     public void onDisable() {
-        if (detectionChecks != null) detectionChecks.shutdown();
+        if (movementEngine != null) movementEngine.shutdown();
+        if (evidenceEngine != null) evidenceEngine.shutdown();
         if (banManager != null) banManager.save();
     }
 
@@ -85,24 +97,25 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
     }
 
     public boolean punishDetection(String check, String player, String detail) {
-        if (!getConfig().getBoolean("autopunish.enabled", true) || check == null) return false;
+        if (!getConfig().getBoolean("autopunish.enabled", false) || check == null) return false;
         String id = check.toLowerCase(java.util.Locale.ROOT);
         String path = "autopunish.checks." + id;
         if (!getConfig().getBoolean(path + ".enabled", false)) return false;
-
         String duration = getConfig().getString(path + ".duration", "1d");
-        String reason = "PurpleAnticheat: " + (detail == null || detail.isBlank()
-                ? "validated detection" : detail.trim());
+        String reason = "PurpleAnticheat: " + (detail == null || detail.isBlank() ? "validated detection" : detail.trim());
         BanManager.BanResult result = banManager.ban(player, reason, duration, "PurpleAnticheat");
         if (result == BanManager.BanResult.SUCCESS) {
-            getLogger().warning("Automatic punishment applied: check=" + id + ", player=" + player
-                    + ", duration=" + duration);
+            getLogger().warning("Automatic punishment applied: check=" + id + ", player=" + player + ", duration=" + duration);
         }
         return result == BanManager.BanResult.SUCCESS;
     }
 
     public boolean reportSignal(Player player, String check, String evidence) {
-        return detectionManager != null && detectionManager.reportSignal(player, check, evidence);
+        return reportEvidence(player, check, evidence, 1.0);
+    }
+
+    public boolean reportEvidence(Player player, String check, String evidence, double weight) {
+        return evidenceEngine != null && evidenceEngine.record(player, check, evidence, weight);
     }
 
     public static String color(String value) {
@@ -112,4 +125,5 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
     public BanManager getBanManager() { return banManager; }
     public AdminGUI getAdminGUI() { return adminGUI; }
     public DetectionManager getDetectionManager() { return detectionManager; }
+    public EvidenceEngine getEvidenceEngine() { return evidenceEngine; }
 }
