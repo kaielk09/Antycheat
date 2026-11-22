@@ -16,7 +16,6 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
     private DetectionManager detectionManager;
     private RateLimitGuard rateLimitGuard;
     private DetectionChecks detectionChecks;
-    private GrimIntegration grimIntegration;
 
     @Override
     public void onEnable() {
@@ -32,13 +31,6 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
         getServer().getPluginManager().registerEvents(rateLimitGuard, this);
         getServer().getPluginManager().registerEvents(detectionChecks, this);
 
-        if (getServer().getPluginManager().isPluginEnabled("GrimAC")) {
-            grimIntegration = new GrimIntegration(this);
-            grimIntegration.start();
-        } else {
-            getLogger().warning("GrimAC not found. Only PurpleAnticheat's built-in checks will run.");
-        }
-
         var cmd = getCommand("purpleanticheat");
         if (cmd == null) {
             getLogger().severe("Command missing from plugin.yml; disabling.");
@@ -47,12 +39,11 @@ public final class PurpleAnticheat extends JavaPlugin implements CommandExecutor
         }
         cmd.setExecutor(this);
         cmd.setTabCompleter(this);
-        getLogger().info("PurpleAnticheat enabled: built-in checks, optional GrimAC integration, moderation and admin tools loaded.");
+        getLogger().info("PurpleAnticheat enabled: standalone detection engine, moderation and admin tools loaded.");
     }
 
     @Override
     public void onDisable() {
-        if (grimIntegration != null) grimIntegration.shutdown();
         if (detectionChecks != null) detectionChecks.shutdown();
         if (banManager != null) banManager.save();
     }
