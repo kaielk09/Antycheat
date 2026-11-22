@@ -23,8 +23,8 @@ public final class AdminGUI implements Listener {
  private final Map<UUID,Draft> drafts=new ConcurrentHashMap<>();
  private final Map<UUID,String> prompts=new ConcurrentHashMap<>();
  private final Map<UUID,String> selected=new ConcurrentHashMap<>();
- private static final String[] IDS={"movement","combat","flight","speed","interaction","packet","inventory","knockback","aim","other","grim"};
- private static final String[] LABELS={"Movement","Combat","Flight","Speed","Interaction","Packet","Inventory","Knockback","Aim","Other","GrimAC"};
+ private static final String[] IDS={"movement","combat","flight","speed","interaction","packet","inventory","knockback","aim" ,"other"};
+ private static final String[] LABELS={"Movement","Combat","Flight","Speed","Interaction","Packet","Inventory","Knockback","Aim" ,"Other"};
  private static final String[] DURATIONS={"20d","6h","3d","1d","12h","1w","30m","2h","perm"};
  private static final int[] REVIEW={1,3,5,10,15,20,30,45,60};
  private final String prefix=PurpleAnticheat.color("&5&lPURPLE &d&lANTICHEAT &8» &r");
@@ -52,7 +52,7 @@ public final class AdminGUI implements Listener {
  public void openConsoleEdit(Player p){
   String sel=selected.computeIfAbsent(p.getUniqueId(),x->IDS[0]);Inventory i=menu("console",54,"&0Purple &8| &dResponse profiles");
   i.setItem(4,item(Material.REDSTONE,"&d&lRESPONSE PROFILES","&7Select a profile, toggle it, then configure duration."));
-  int[] slots={10,11,12,13,14,15,16,19,20,21,22};
+  int[] slots={10,11,12,13,14,15,16,19,20,21};
   for(int n=0;n<IDS.length;n++){String path="autopunish.checks."+IDS[n];boolean en=plugin.getConfig().getBoolean(path+".enabled",false);i.setItem(slots[n],item(IDS[n].equals(sel)?Material.LIME_DYE:(en?Material.ENCHANTED_BOOK:Material.GRAY_DYE),"&d&l"+LABELS[n], "&7Enabled: "+(en?"&aYES":"&cNO"),"&7Duration: &f"+plugin.getConfig().getString(path+".duration","1d"),"&8Click to select/toggle"));}
   for(int n=0;n<DURATIONS.length;n++)i.setItem(27+n,item(Material.CLOCK,"&d"+DURATIONS[n],"&7Set selected profile duration"));
   for(int n=0;n<REVIEW.length;n++)i.setItem(36+n,item(Material.CLOCK,"&d"+REVIEW[n]+"s review","&7Set selected review window"));
