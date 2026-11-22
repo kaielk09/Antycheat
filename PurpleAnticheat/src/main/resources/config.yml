@@ -1,0 +1,30 @@
+settings:
+  enabled: true
+  alerts: true
+  logging: true
+  review-mode: true
+  notify-admins: true
+messages:
+  prefix: '&5&lPURPLE &d&lANTICHEAT &8» &r'
+  ban-title: '&5&lPURPLE ANTICHEAT'
+  ban-subtitle: '&dYou have been banned from this server'
+  ban-format: '&8&lPunishment details\n&7Reason: &f{reason}\n&7Duration: &f{duration}\n&7Banned by: &f{staff}\n\n&dYou may appeal through the server staff.'
+  ban-unknown-duration: '&cInvalid duration. Use 30m, 2h, 3d, 1w or perm.'
+autopunish:
+  enabled: true
+  checks:
+    movement: {enabled: false, duration: '20d', confirm-seconds: 3}
+    combat: {enabled: false, duration: '6h', confirm-seconds: 3}
+    flight: {enabled: false, duration: '3d', confirm-seconds: 3}
+    speed: {enabled: false, duration: '1d', confirm-seconds: 3}
+    interaction: {enabled: false, duration: '12h', confirm-seconds: 3}
+    packet: {enabled: false, duration: '6h', confirm-seconds: 3}
+    inventory: {enabled: false, duration: '1d', confirm-seconds: 3}
+    knockback: {enabled: false, duration: '12h', confirm-seconds: 3}
+    aim: {enabled: false, duration: '1d', confirm-seconds: 3}
+    other: {enabled: false, duration: '1d', confirm-seconds: 3}
+guard:
+  enabled: true
+  commands: {limit: 10, window-seconds: 5}
+  chat: {limit: 8, window-seconds: 5}
+  interactions: {limit: 45, window-seconds: 5}
